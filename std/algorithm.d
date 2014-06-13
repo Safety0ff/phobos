@@ -8553,6 +8553,8 @@ if (s != SwapStrategy.stable
         {
             static if (!isTuple!(typeof(v))) // Bug 12086
                 deprecated("Please use tuples to specify a range of offsets instead.");
+            else
+                static assert(typeof(v).Types.length == 2);
             blackouts[i].pos = v[0];
             blackouts[i].len = v[1] - v[0];
         }
@@ -8632,14 +8634,17 @@ if (s == SwapStrategy.stable && isForwardRange!Range && Offset.length >= 1)
     size_t pos;
     foreach (pass, i; offset)
     {
-        static if (is(typeof(i[0])) && is(typeof(i[1])))
+        static if (is(typeof(i[0]) : size_t) && is(typeof(i[1]) : size_t))
         {
             static if (!isTuple!(typeof(i))) // Bug 12086
                 deprecated("Please use tuples to specify a range of offsets instead.");
+            else
+                static assert(typeof(i).Types.length == 2);
             auto from = i[0], delta = i[1] - i[0];
         }
         else
         {
+            static assert(is(typeof(i) : size_t), typeof(i).stringof);
             auto from = i;
             enum delta = 1;
         }
