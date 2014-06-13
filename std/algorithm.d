@@ -369,7 +369,7 @@ module std.algorithm;
 import std.functional : unaryFun, binaryFun;
 import std.range;
 import std.traits;
-import std.typecons : tuple, Tuple;
+import std.typecons : isTuple, tuple, Tuple;
 import std.typetuple : TypeTuple, staticMap, allSatisfy;
 
 version(unittest)
@@ -8551,6 +8551,8 @@ if (s != SwapStrategy.stable
     {
         static if (is(typeof(v[0]) : size_t) && is(typeof(v[1]) : size_t))
         {
+            static if (!isTuple!(typeof(v))) // Bug 12086
+                deprecated("Please use tuples to specify a range of offsets instead.");
             blackouts[i].pos = v[0];
             blackouts[i].len = v[1] - v[0];
         }
@@ -8632,6 +8634,8 @@ if (s == SwapStrategy.stable && isForwardRange!Range && Offset.length >= 1)
     {
         static if (is(typeof(i[0])) && is(typeof(i[1])))
         {
+            static if (!isTuple!(typeof(i))) // Bug 12086
+                deprecated("Please use tuples to specify a range of offsets instead.");
             auto from = i[0], delta = i[1] - i[0];
         }
         else
